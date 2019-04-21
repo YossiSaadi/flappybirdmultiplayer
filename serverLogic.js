@@ -1,5 +1,5 @@
 const {io} = require('./serverInit.js');
-const {STARTING_X, STARTING_Y, CANVAS_WIDTH, CANVAS_HEIGHT} = require('./constants.js');
+const {REFRESH_RATE, TAKEOFF_PACE, DIVING_PACE, STARTING_X, STARTING_Y, PLAYER_IMG_WIDTH, PLAYER_IMG_HEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT} = require('./constants.js');
 
 const players = {};
 
@@ -13,27 +13,21 @@ io.on('connection', (socket) => {
     socket.on('movement', (data) => {
         let player = players[socket.id];
         if (player) {
-            if (data.left && player.x > 0) {
-                player.x -= 5;
-                console.log("left", player.x + "/" + CANVAS_WIDTH, player.y + "/" + CANVAS_HEIGHT);
-            }
-            if (data.right && player.x < CANVAS_WIDTH) {
-                player.x += 5;
-                console.log("right", player.x + "/" + CANVAS_WIDTH, player.y + "/" + CANVAS_HEIGHT);
-            }
-            if (data.down && player.y < CANVAS_HEIGHT) {
-                player.y += 5;
-                console.log("down", player.x + "/" + CANVAS_WIDTH, player.y + "/" + CANVAS_HEIGHT);
-            }
             if (data.up && player.y > 0) {
-                player.y -= 5;
-                console.log("up", player.x + "/" + CANVAS_WIDTH, player.y + "/" + CANVAS_HEIGHT);
+                player.y -= TAKEOFF_PACE;
+            } else if (player.y < CANVAS_HEIGHT - PLAYER_IMG_HEIGHT) {
+                player.y += DIVING_PACE;
             }
-        }
+            //console.log(`*up* x: ${player.x}/${CANVAS_WIDTH} y: ${player.y}/${CANVAS_HEIGHT}`);
+        } 
     });
 });
 
 // send the players state 60 times a second to the client
 setInterval(() => {
     io.sockets.emit('state', players);
-}, 1000 / 60);
+}, 1000 / REFRESH_RATE);
+
+setInterval(() => {
+    io.sockets.emit('pipe', players);
+}, 1000);

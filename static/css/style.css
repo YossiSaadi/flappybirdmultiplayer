@@ -5,28 +5,18 @@
 }
 
 canvas {
+    margin: 15px 0;
     border: 5px solid black;
-    flex-grow: 3;
+    background-image: url("/static/css/img/background.png");
+    background-size: cover;
+    background-position: center;
+    height: 90vh;
 }
 
 .Aligner {
     display: flex;
-    height: 500px;
     justify-content: center;
     flex-flow: row nowrap;
-}
-
-.Aligner-item {
-    height: 250px;
-    margin: auto;
-}
-
-.Aligner-item--top {
-    align-self: flex-start;
-}
-
-.Aligner-item--bottom {
-    align-self: flex-end;
 }
 
 html {
@@ -47,32 +37,36 @@ header {
 h1,
 h2 {
     margin: 10px 0;
-    color: rgba(255, 255, 255, 0.9);
+    color: #fff;
     font-size: 200%;
     font-family: 'Lato', sans-serif;
-    font-weight: 300;
+    font-weight: 400;
     text-transform: capitalize;
     letter-spacing: 5px;
     word-spacing: 3px;
-}
-
-h1 {
     text-align: center;
 }
 
-h1:after {
+h1 {
+    
+    text-shadow: #000 0 0 4px;
+}
+
+/* h1:after {
     content: "";
     display: block;
     height: 3px;
     background-color: rgba(255, 255, 255, 0.64);
     width: 35%;
     margin: 15px auto 0 auto;
-}
+} */
 
 h2 {
-    color: rgba(255, 255, 255, 0.4);
+    /* color: rgba(255, 255, 255, 0.4); */
+    color: #000;
     font-size: 100%;
-    font-weight: 400;
+    font-weight: 300;
+    text-shadow: rgb(13, 136, 2) 0 0 3px;
 }
 
 .main-title {

@@ -2,19 +2,17 @@
 // const CANVAS_HEIGHT = document.window.innerHeight;
 
 module.exports = {
-    A_KEY: 65,
-    D_KEY: 68,
-    S_KEY: 83,
-    W_KEY: 87,
+    REFRESH_RATE: 60,
 
-    LEFT_KEY: 37,
-    RIGHT_KEY: 39,
-    DOWN_KEY: 40,
-    UP_KEY: 38,
+    TAKEOFF_PACE: 7,
+    DIVING_PACE: 13,
 
-    STARTING_X: 300,
+    STARTING_X: 150,
     STARTING_Y: 300,
 
-    CANVAS_WIDTH: 800,
+    PLAYER_IMG_WIDTH: 50,
+    PLAYER_IMG_HEIGHT: 50,
+
+    CANVAS_WIDTH: 1000,
     CANVAS_HEIGHT: 600
 }
