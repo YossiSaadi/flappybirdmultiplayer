@@ -3,7 +3,7 @@
 <html lang="en">
 
     <head>
-        <link rel="stylesheet" type="text/css" href="static/css/style.css">
+        <link rel="stylesheet" type="text/css" href="resources/css/style.css">
         <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
         <title>Multiplayer Game - Assignment 3 - Internet Technologies</title>
         <script src="socket.io/socket.io.js"></script>
@@ -13,20 +13,34 @@
         <div class="Aligner">
             <canvas id="canvas"></canvas>
         </div>
-
-        <img id="birdImg" src="https://sonarlearning.co.uk/images/icons/courseIcons/cocos2d-x-flappy-bird.png" style="display:none">
-        <img id="bigPipeImg" src="static/css/img/bigpipe.png" style="display:none">
-        <img id="endPipeImg" src="static/css/img/endpipe.png" style="display:none">
         
         <header>
-            
             <div class="main-title">
                 <h1>Flappy Bird</h1>
                 <h2>Yossi Saadi - 305651069<br>Assignment 3 | Internet Technologies</h2>
             </div>
+
+            <div class="title">
+                <h1 id="start">Press any Key to Start</h1>
+                <h1 id="waiting" class="hide">Waiting for The Other Players<br>Players remaining to be connected:</h1>
+                <h1 id="remaining" class="hide">1</h1>
+                <h1 id="end" class="hide">Game Over</h1>
+            </div>
+
+            <div id="buttons">
+                <input type="button" id="restart_button" class="btn buttons hide" value="Restart">
+            </div>
             
         </header>
         
+        <img id="birdImg1" src="resources/img/bird1.png" style="display:none">
+        <img id="birdImg2" src="resources/img/bird2.png" style="display:none">
+        <img id="birdImg3" src="resources/img/bird3.png" style="display:none">
+        <img id="birdImg4" src="resources/img/bird4.png" style="display:none">
+        <img id="bigPipeImg" src="resources/img/bigpipe.png" style="display:none">
+        <img id="endPipeImg" src="resources/img/endpipe.png" style="display:none">
+        <img id="groundImg" src="resources/img/ground.png" style="display:none">
     </body>
     <script src="static/multiplayerGame.js"></script>
+    
 </html>

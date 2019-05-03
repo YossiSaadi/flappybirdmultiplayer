@@ -8,7 +8,7 @@ const server = http.Server(app);
 const io = socketIo(server);
 
 app.set('port', 5000);
-app.use('/static', express.static(__dirname + '/static'));
+app.use('/', express.static(__dirname + '/'));
 
 app.get('/', (request, respone) => {
     respone.sendFile(path.join(__dirname, 'index.html'));
