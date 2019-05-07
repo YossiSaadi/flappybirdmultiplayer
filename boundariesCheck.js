@@ -1,4 +1,4 @@
-const {PIPE_TOP_WIDTH, PIPE_TOP_HEIGHT, PIPE_SPACE, CANVAS_HEIGHT, GROUND_HEIGHT, IMG_HEIGHT} = require('./constants');
+const {PIPE_TOP_WIDTH, PIPE_TOP_HEIGHT, PIPE_SPACE, CANVAS_HEIGHT, GROUND_TOP_HEIGHT, IMG_HEIGHT} = require('./constants');
 
 const checkBirdInThePipesXBoundary = (playerX, pipeX) => {
     return (playerX > pipeX && playerX < (pipeX + PIPE_TOP_WIDTH));
@@ -17,7 +17,7 @@ const checkBirdInTheBottomPipeYBoundary = (playerY, pipeHeight) => {
 }
 
 const checkBirdInTheGroundYBoundary = (playerY) => {
-    return playerY >= (CANVAS_HEIGHT - GROUND_HEIGHT - IMG_HEIGHT);
+    return playerY >= (CANVAS_HEIGHT - GROUND_TOP_HEIGHT - IMG_HEIGHT);
 }
 
 module.exports = {

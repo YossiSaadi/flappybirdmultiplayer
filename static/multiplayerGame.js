@@ -1,38 +1,33 @@
 const socket = io();
 
-const UP_KEY = 32;
-
-const REFRESH_RATE = 60;
-const ONE_SECOND_MS = 1000;
-
 const IMG_WIDTH = 50;
 const IMG_HEIGHT = 50;
 
-const CANVAS_WIDTH = 1000;
-const CANVAS_ZERO_WIDTH = 0;
-const CANVAS_HEIGHT = 600;
-const CANVAS_ZERO_HEIGHT = 0;
+const REFRESH_RATE = 60;
 
-const PIPE_SPACE = 200;
-const PIPE_BODY_WIDTH = 60;
-const PIPE_TOP_WIDTH = 90;
-const PIPE_TOP_HEIGHT = 35;
+const UP_KEY = 32;
+
+const CANVAS_WIDTH = 1000;
+const CANVAS_HEIGHT = 600;
 
 const GROUND_TOP_HEIGHT = 20;
 const GROUND_BOTTOM_HEIGHT = 150;
 
-const POINTS = document.getElementById('points');
+const PIPE_TOP_WIDTH = 90;
+const PIPE_TOP_HEIGHT = 35;
+
+const PIPE_SPACE = 200;
+const PIPE_BODY_WIDTH = 60;
+
+const ONE_SECOND_MS = 1000;
 
 const START_TITLE = document.getElementById('start');
 const END_TITLE = document.getElementById('end');
+const STATUS_TITLE = document.getElementById('status');
 const WAIT_TITLE = document.getElementById('waiting');
 const REMAINING_TITLE = document.getElementById('remaining');
-// const RESTART_BUTTON = document.getElementById('restart_button');
 
 const CANVAS = document.getElementById('canvas');
-
-CANVAS.width = CANVAS_WIDTH;
-CANVAS.height = CANVAS_HEIGHT;
 const context = CANVAS.getContext('2d');
 
 const bigPipeImg = document.getElementById('bigPipeImg');
@@ -43,6 +38,11 @@ let name;
 let moveUp = false;
 let numOfPlayersInGame; 
 let numOfPlayersToPlayWith;
+
+const setCanvasProps = () => {
+    CANVAS.width = CANVAS_WIDTH;
+    CANVAS.height = CANVAS_HEIGHT;
+}
 
 const addMoveListeners = () => {
     document.addEventListener('keydown', (event) => {
@@ -61,7 +61,7 @@ setInterval(() => {
     socket.emit('movement', moveUp);
 }, ONE_SECOND_MS / REFRESH_RATE);
 
-socket.on('send num of total players to client', (numTotalPlayers) => {
+socket.on('total players from server', (numTotalPlayers) => {
     numOfPlayersToPlayWith = numTotalPlayers;
 });
 
@@ -89,7 +89,7 @@ socket.on('move game', (players, pipes) => {
         const player = players[id];
         context.drawImage(getBirdImg(player.serial), player.x, player.y, IMG_WIDTH, IMG_HEIGHT);
         context.font = '15px Lato';
-        context.fillText(player.socketName + " " + player.points, player.x + IMG_WIDTH, player.y + IMG_HEIGHT);
+        context.fillText(player.name + " " + player.points, player.x + IMG_WIDTH, player.y + IMG_HEIGHT);
     }
     
     pipes.forEach(pipe => {
@@ -112,11 +112,19 @@ const getBirdImg = (serial) => {
     return document.getElementById(`birdImg${serial}`);
 }
 
-socket.on('end', () => {
-    END_TITLE.classList.remove('hide');
+socket.on('end', (isWinner, player) => {
     context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    END_TITLE.classList.remove('hide');
+    STATUS_TITLE.classList.remove('hide');
+
+    let status;
+    if (isWinner) {
+        status = `You WON! ${player.name}: ${player.points}`;
+    } else {
+        status = `You LOST! ${player.name}: ${player.points}`;
+    }
+    STATUS_TITLE.innerText = status;
     socket.disconnect();
-    // setTimeout(alert('Game ended!'), ONE_SECOND_MS);
 });
 
 const startGame = () => {
@@ -135,7 +143,7 @@ const askPlayerName = () => {
 }
 
 const askTotalPlayers = () => {
-    numOfPlayersToPlayWith = prompt('How many players (including you) would be playing?');
+    numOfPlayersToPlayWith = parseInt(prompt('How many players (including you) would be playing?'));
     socket.emit('init total players', numOfPlayersToPlayWith);
 }
 
@@ -152,6 +160,9 @@ const initTitlesState = () => {
     if (!END_TITLE.classList.contains('hide')) {
         START_TITLE.classList.add('hide');
     }
+    if (!STATUS_TITLE.classList.contains('hide')) {
+        STATUS_TITLE.classList.add('hide');
+    }
 }
 
 const init = () => {
@@ -164,4 +175,5 @@ const init = () => {
     });
 }
 
+setCanvasProps();
 init();

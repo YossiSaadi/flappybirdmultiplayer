@@ -45,9 +45,11 @@ h2 {
 }
 
 h3 {
-    color: #000;
-    text-shadow: #fff 0 0 2px;
-    font-size: 100%;
+    color: #fff;
+    font-family: 'Anton', sans-serif;
+    /* text-shadow: #fff 0 0 2px; */
+    /* -webkit-text-stroke: 2px #000; */
+    font-size: 150%;
     text-align: left;
 }
 

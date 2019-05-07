@@ -1,45 +1,67 @@
 const {io} = require('./serverInit.js');
-const {REFRESH_RATE, 
+const {IMG_HEIGHT,
+    REFRESH_RATE, 
     DIFFICULTY,
     TAKEOFF_PACE, 
     DIVING_PACE, 
     STARTING_X, 
     STARTING_Y, 
-    PLAYER_IMG_HEIGHT, 
     CANVAS_WIDTH, 
     CANVAS_HEIGHT, 
-    GROUND_HEIGHT,
+    GROUND_TOP_HEIGHT,
     ONE_SECOND_MS} = require('./constants.js');
 
-const players = {};
+let players;
 const pipes = [];
-let gameStarted = false;
-let socketCounter = 0;
-let numOfPlayers = 0;
-let numOfPlayersInGame = 0;
+let gameStarted;
+let socketCounter;
+let numOfTotalPlayers;
+let numOfCurrentPlayersInGame;
+
+const initGame = () => {
+    players = {};
+    pipes.length = 0;
+    gameStarted = false;
+    socketCounter = 0;
+    numOfTotalPlayers = 0;
+    numOfCurrentPlayersInGame = 0;
+}
+
+const checkIsWinner = () => {
+    if (numOfCurrentPlayersInGame <= 1) {
+        return true;
+    }
+    return false;
+}
+
+initGame();
 
 const {checkBirdInThePipesXBoundary, checkBirdInThePipesYBoundary, checkBirdInTheGroundYBoundary} = require('./boundariesCheck.js');
 
 setInterval(() => {
-    io.sockets.emit('current players', numOfPlayersInGame);
-    console.log(numOfPlayers, numOfPlayersInGame);
-    if (numOfPlayersInGame == numOfPlayers && numOfPlayers > 0 && !gameStarted) {
+    io.sockets.emit('current players', numOfCurrentPlayersInGame);
+    console.log(numOfTotalPlayers, numOfCurrentPlayersInGame);
+    if (numOfCurrentPlayersInGame === numOfTotalPlayers && numOfTotalPlayers > 0 && !gameStarted) {
         gameStarted = true;
         io.sockets.emit('start');
     }
 }, ONE_SECOND_MS / 2);
 
 io.on('connection', (socket) => {
-    socket.emit('send num of total players to client', numOfPlayers);
+    socket.emit('total players from server', numOfTotalPlayers);
     
+    socket.on('init total players', (totalPlayers) => {
+        numOfTotalPlayers = totalPlayers;
+    });
+
     socket.on('increase num of players in game', () => {
-        ++numOfPlayersInGame;
+        numOfCurrentPlayersInGame++;
     });
 
     socket.on('new player', (name) => {
         players[socket.id] = {
             serial: ++socketCounter,
-            socketName: name,
+            name: name,
             x: STARTING_X,
             y: STARTING_Y,
             points: 0
@@ -50,32 +72,33 @@ io.on('connection', (socket) => {
         pipes.length = 0;
     });
 
-    socket.on('init total players', (numOfTotalPlayers) => {
-        numOfPlayers = numOfTotalPlayers;
-    });
-
     socket.on('movement', (bool) => {
         const player = players[socket.id];
-        
         if (player) {
             if (bool && player.y > 0) {
                 player.y -= TAKEOFF_PACE;
-            } else if (player.y < (CANVAS_HEIGHT - PLAYER_IMG_HEIGHT - GROUND_HEIGHT)) {
+            } else if (player.y < (CANVAS_HEIGHT - IMG_HEIGHT - GROUND_TOP_HEIGHT)) {
                 player.y += DIVING_PACE;
             }
             
             pipes.forEach(pipe => {
-                if (checkBirdInThePipesXBoundary(player.x, pipe.x) && checkBirdInThePipesYBoundary(player.y, pipe.height)) {
-                    socket.emit('end');
-                } else if (checkBirdInTheGroundYBoundary(player.y)) {
-                    socket.emit('end');
+                if ( (checkBirdInThePipesXBoundary(player.x, pipe.x) && checkBirdInThePipesYBoundary(player.y, pipe.height)) || checkBirdInTheGroundYBoundary(player.y)) {
+                    socket.emit('end', checkIsWinner(), player);
                 }
                 if (player.x >= pipe.x && player.x <= pipe.x + 5) {
                     player.points++;
                 }
             });
         }
-        
+    });
+
+    socket.on('disconnect', () => {
+        if (socketCounter > 0) {
+            socketCounter--;
+        }
+        if (numOfCurrentPlayersInGame > 0) {
+            numOfCurrentPlayersInGame--;
+        }
     });
 });
 
